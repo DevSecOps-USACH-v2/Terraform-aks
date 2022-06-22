@@ -34,7 +34,7 @@ steps:
     command: 'import'
     environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     allowTelemetryCollection: true
-    resourceAddress: 'azurerm_resource_group.aks-getting-started'
+    resourceAddress: 'module.azurerm_resource_group.aks-getting-started'
     resourceId: '/subscriptions/9909fced-8203-44b6-af68-11f833a37e60/resourceGroups/aks-getting-started'
 - task: TerraformCLI@0
   inputs:
