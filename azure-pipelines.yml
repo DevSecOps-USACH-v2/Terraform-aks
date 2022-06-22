@@ -14,7 +14,7 @@ steps:
   inputs:
     tfsecversion: '0.58.6'
 
-- script: tsfsec .
+- script: cd /usr/local/bin; ./tfsec .
   continueOnError: true
   
 - task: TerraformInstaller@0
@@ -40,7 +40,7 @@ steps:
     environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     runAzLogin: true
     allowTelemetryCollection: true
-    resourceAddress: 'cluster.azurerm_resource_group.aks-getting-started'
+    resourceAddress: 'module.cluster.azurerm_resource_group.aks-getting-started'
     resourceId: '/subscriptions/9909fced-8203-44b6-af68-11f833a37e60/resourceGroups/aks-getting-started'
   continueOnError: true
 - task: TerraformCLI@0
