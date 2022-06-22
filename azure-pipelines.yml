@@ -18,25 +18,9 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
   
-- task: TerraformInstaller@0
+- task: AzureCLI@2
   inputs:
-    terraformVersion: 'latest'
-
-- task: TerraformCLI@0
-  inputs:
-    command: 'init'
-    backendType: 'azurerm'
-    backendServiceArm: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
-    allowTelemetryCollection: true
-- task: TerraformCLI@0
-  inputs:
-    command: 'plan'
-    environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
-    allowTelemetryCollection: true
-
-- task: TerraformCLI@0
-  inputs:
-    command: 'apply'
-    environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
-    runAzLogin: true
-    allowTelemetryCollection: true
+    azureSubscription: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az account list -o table'
