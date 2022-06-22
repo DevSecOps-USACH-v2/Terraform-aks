@@ -23,6 +23,12 @@ steps:
     backendType: 'azurerm'
     backendServiceArm: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     allowTelemetryCollection: true
+
+- task: TerraformCLI@0
+  inputs:
+    command: 'import'
+    commandOptions: 'azurerm_resource_group.aks-getting-started /subscriptions/9909fced-8203-44b6-af68-11f833a37e60/resourceGroups/aks-getting-started'
+    allowTelemetryCollection: true
 - task: TerraformCLI@0
   inputs:
     command: 'plan'
