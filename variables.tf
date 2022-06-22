@@ -16,6 +16,7 @@ variable "subscription_id" {
 
 
 variable "ssh_key" {
+  default "123"
 }
 
 variable "location" {
