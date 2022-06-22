@@ -25,6 +25,8 @@ steps:
 - task: TerraformCLI@0
   inputs:
     command: 'init'
+    backendType: 'azurerm'
+    backendServiceArm: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     allowTelemetryCollection: true
 - task: TerraformCLI@0
   inputs:
