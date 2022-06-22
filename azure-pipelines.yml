@@ -10,8 +10,9 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: terraformstaticcodeanalyzer@1
+  inputs:
+    tfsecversion: '0.58.6'
   
 - task: TerraformInstaller@0
   inputs:
