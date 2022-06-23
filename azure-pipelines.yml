@@ -1,7 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
 
 trigger:
 - main
@@ -17,15 +13,17 @@ steps:
 - script: cd /usr/local/bin; ./tfsec $(Pipeline.Workspace)
   continueOnError: true
   displayName: Terraform scan
+  
 - script: |
     ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "clagos353@gmail.com" -q -f ~/.ssh/id_rsa
     SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
     echo $SSH_KEY
-  displayName: SSH
+  displayName: Configuracion SSH
   
 - task: TerraformInstaller@0
   inputs:
     terraformVersion: 'latest'
+  displayName: Instalacion Terraform
 
 - task: TerraformCLI@0
   inputs:
@@ -33,6 +31,7 @@ steps:
     backendType: 'azurerm'
     backendServiceArm: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     allowTelemetryCollection: true
+  displayName: Terraform init
 
 - task: TerraformCLI@0
   inputs:
@@ -41,6 +40,8 @@ steps:
     runAzLogin: true
     commandOptions: '-var ssh_key="$SSH_KEY"'
     allowTelemetryCollection: true
+  displayName: Terraform plan
+  
 - task: TerraformCLI@0
   inputs:
     command: 'import'
@@ -51,6 +52,8 @@ steps:
     resourceAddress: 'module.cluster.azurerm_resource_group.aks-getting-started'
     resourceId: '/subscriptions/9909fced-8203-44b6-af68-11f833a37e60/resourceGroups/aks-getting-started'
   continueOnError: true
+  displayName: Terraform import
+  
 - task: TerraformCLI@0
   inputs:
     command: 'apply'
@@ -58,3 +61,4 @@ steps:
     runAzLogin: true
     #commandOptions: '-var ssh_key="$SSH_KEY"'
     allowTelemetryCollection: true
+  displayName: Terraform apply
