@@ -14,8 +14,14 @@ steps:
   inputs:
     tfsecversion: '0.58.6'
 
-- script: cd /usr/local/bin; ./tfsec .
+- script: cd /usr/local/bin; ./tfsec $(Pipeline.Workspace)
   continueOnError: true
+  displayName: Terraform scan
+- script: |
+    ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "clagos353@gmail.com" -q -f ~/.ssh/id_rsa
+    SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
+    echo $SSH_KEY
+  displayName: SSH
   
 - task: TerraformInstaller@0
   inputs:
@@ -48,4 +54,5 @@ steps:
     command: 'apply'
     environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     runAzLogin: true
+    commandOptions: '-var ssh_key="$SSH_KEY"'
     allowTelemetryCollection: true
