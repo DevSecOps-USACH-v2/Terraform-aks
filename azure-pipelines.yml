@@ -21,7 +21,7 @@ steps:
 
 - script: |
      docker pull aquasec/trivy
-     docker run --rm aquasec/trivy config $(Pipeline.Workspace) 
+     docker run -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/app --rm aquasec/trivy config $(Pipeline.Workspace) 
     
 
 - script: cd /usr/local/bin; ./tfsec $(Pipeline.Workspace)
