@@ -9,22 +9,29 @@ steps:
 - task: terraformstaticcodeanalyzer@1
   inputs:
     tfsecversion: '0.58.6'
+  displayName: Install Terraform code analyzer
+#- task: DockerInstaller@0
+#  inputs:
+#    dockerVersion: '17.09.0-ce'
 
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '17.09.0-ce'
+#- task: Docker@2
+#  inputs:
+#    containerRegistry: 'Docker'
+#    command: 'login'
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Docker'
-    command: 'login'
+#- script: |
+#     docker pull aquasec/trivy
+#     docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(Pipeline.Workspace):/app --rm aquasec/trivy config $(Pipeline.Workspace) 
+    
+- script: | 
+     sudo apt-get install -y rpm
+     wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
+     sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
+     trivy config $(Pipeline.Workspace)
 
 - script: |
-     docker pull aquasec/trivy
-     docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(Pipeline.Workspace):/app --rm aquasec/trivy config $(Pipeline.Workspace) 
-    
-
-- script: cd /usr/local/bin; ./tfsec $(Pipeline.Workspace)
+    cd /usr/local/bin 
+    ./tfsec $(Pipeline.Workspace)
   continueOnError: true
   displayName: Terraform scan
   
