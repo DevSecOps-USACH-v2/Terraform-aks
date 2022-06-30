@@ -104,11 +104,11 @@ steps:
             export AZURE_CLIENT_SECRET="$(CLIENTE_SECRET)"
             export AZURE_TENANT_ID="$(TENANT_ID)"
             inspec init profile --platform azure azure-inspec-tests --chef-license=accept
-            inspec exec ./azure-inspec-tests/ -t azure:// --chef-license=accept --reporter cli junit:inspectestresults.xml
+            inspec exec ./azure-inspec-tests/ -t azure:// --chef-license=accept
     
-- task: PublishTestResults@2
-  displayName: Publish inspec test results
-  condition: succeededOrFailed()
-  inputs:
-    testResultsFiles: '**/inspectestresults.xml'
-    mergeTestResults: true
+#- task: PublishTestResults@2
+#  displayName: Publish inspec test results
+#  condition: succeededOrFailed()
+#  inputs:
+#    testResultsFiles: '**/inspectestresults.xml'
+#    mergeTestResults: true
