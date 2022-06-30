@@ -53,7 +53,7 @@ steps:
     backendServiceArm: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     allowTelemetryCollection: true
   displayName: Terraform init
-
+  continueOnError: true
 - task: TerraformCLI@0
   inputs:
     command: 'plan'
@@ -62,7 +62,7 @@ steps:
     commandOptions: '-var ssh_key="$SSH_KEY"'
     allowTelemetryCollection: true
   displayName: Terraform plan
-  
+  continueOnError: true
 - task: TerraformCLI@0
   inputs:
     command: 'import'
@@ -83,3 +83,24 @@ steps:
     #commandOptions: '-var ssh_key="$SSH_KEY"'
     allowTelemetryCollection: true
   displayName: Terraform apply
+  continueOnError: true
+
+- task: UseRubyVersion@0
+  displayName: 'Install Ruby'
+  inputs:
+    versionSpec: '>= 2.5'
+    addToPath: true 
+
+- script: gem install inspec-bin
+  displayName: 'Install inspec-bin' 
+
+- task: Bash@3
+  displayName: 'Run inspec tests'
+  inputs:
+    targetType: inline
+    script: |
+            export AZURE_SUBSCRIPTION_ID="$(SUBSCRIPTION_ID)"
+            export AZURE_CLIENT_ID="$(CLIENT_ID)"
+            export AZURE_CLIENT_SECRET="$(CLIENT_SECRET)"
+            export AZURE_TENANT_ID="$(TENANT_ID)"
+            inspec exec ./azure-inspec-tests/ -t azure:// --chef-license=accept --reporter cli junit:inspectestresults.xml
