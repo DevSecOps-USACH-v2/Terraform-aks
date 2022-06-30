@@ -103,7 +103,7 @@ steps:
             export AZURE_CLIENT_ID="$(CLIENT_ID)"
             export AZURE_CLIENT_SECRET="$(CLIENTE_SECRET)"
             export AZURE_TENANT_ID="$(TENANT_ID)"
-            inspec exec ~/azure-inspec-tests/ -t azure:// --reporter cli junit:inspectestresults.xml
+            inspec exec ~/azure-inspec-tests/ -t azure:// --chef-license=accept --reporter cli junit:inspectestresults.xml
     
 - task: PublishTestResults@2
   displayName: Publish inspec test results
