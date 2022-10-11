@@ -5,47 +5,22 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+- group: secret
+
 steps:
-- task: terraformstaticcodeanalyzer@1
-  inputs:
-    tfsecversion: '0.58.6'
-  displayName: Install Terraform code analyzer
-#- task: DockerInstaller@0
-#  inputs:
-#    dockerVersion: '17.09.0-ce'
-
-#- task: Docker@2
-#  inputs:
-#    containerRegistry: 'Docker'
-#    command: 'login'
-
-#- script: |
-#     docker pull aquasec/trivy
-#     docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(Pipeline.Workspace):/app --rm aquasec/trivy config $(Pipeline.Workspace) 
-    
-- script: | 
-     sudo apt-get install -y rpm
-     wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
-     sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
-     trivy config $(Pipeline.Workspace)
-
-- script: |
-    cd /usr/local/bin 
-    ./tfsec $(Pipeline.Workspace)
-  continueOnError: true
-  displayName: Terraform scan
-  
-- script: |
-    ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "clagos353@gmail.com" -q -f ~/.ssh/id_rsa
-    SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
-    echo $SSH_KEY
-  displayName: Configuracion SSH
-  
 - task: TerraformInstaller@0
   inputs:
-    terraformVersion: 'latest'
+    terraformVersion: '1.2.3'
   displayName: Instalacion Terraform
 
+- script: |
+    ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "$(CORREO)" -q -f ~/.ssh/id_rsa
+    SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
+    echo $SSH_KEY
+    echo "##vso[task.setvariable variable=SET_SSH;isOutput=true]$SSH_KEY"
+  name: setssh
+  displayName: Configuracion SSH
 - task: TerraformCLI@0
   inputs:
     command: 'init'
@@ -53,22 +28,21 @@ steps:
     backendServiceArm: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     allowTelemetryCollection: true
   displayName: Terraform init
-
+  continueOnError: true
 - task: TerraformCLI@0
   inputs:
     command: 'plan'
     environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
-    runAzLogin: true
-    commandOptions: '-var ssh_key="$SSH_KEY"'
+    commandOptions: '-var ssh_key="$(setssh.SET_SSH)" -var serviceprinciple_id="$(serviceprinciple_id)" -var serviceprinciple_key="$(serviceprinciple_key)" -var tenant_id="$(tenant_id)" -var subscription_id="$(subscription_id)"'
     allowTelemetryCollection: true
   displayName: Terraform plan
-  
+  continueOnError: true
 - task: TerraformCLI@0
   inputs:
     command: 'import'
     environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     runAzLogin: true
-    commandOptions: '-var ssh_key="$SSH_KEY"'
+    commandOptions: '-var ssh_key="$(setssh.SET_SSH)" -var serviceprinciple_id="$(serviceprinciple_id)" -var serviceprinciple_key="$(serviceprinciple_key)" -var tenant_id="$(tenant_id)" -var subscription_id="$(subscription_id)"'
     allowTelemetryCollection: true
     resourceAddress: 'module.cluster.azurerm_resource_group.aks-getting-started'
     resourceId: '/subscriptions/9909fced-8203-44b6-af68-11f833a37e60/resourceGroups/aks-getting-started'
@@ -80,6 +54,7 @@ steps:
     command: 'apply'
     environmentServiceName: 'azure(9909fced-8203-44b6-af68-11f833a37e60)'
     runAzLogin: true
-    #commandOptions: '-var ssh_key="$SSH_KEY"'
+    commandOptions: '-var ssh_key="$(setssh.SET_SSH)" -var serviceprinciple_id="$(serviceprinciple_id)" -var serviceprinciple_key="$(serviceprinciple_key)" -var tenant_id="$(tenant_id)" -var subscription_id="$(subscription_id)"'
     allowTelemetryCollection: true
   displayName: Terraform apply
+  continueOnError: true
