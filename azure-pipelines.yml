@@ -6,7 +6,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-- group: secret
+- group: secrets
 
 steps:
 - task: TerraformInstaller@0
