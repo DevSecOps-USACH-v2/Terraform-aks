@@ -13,6 +13,16 @@ steps:
   inputs:
     terraformVersion: '1.2.3'
   displayName: Instalacion Terraform
+- task: terraformstaticcodeanalyzer@1
+  inputs:
+    tfsecversion: '0.58.6'
+  displayName: Install Terraform code analyzer
+
+- script: |
+    cd /usr/local/bin 
+    ./tfsec $(Pipeline.Workspace)
+  continueOnError: true
+  displayName: Terraform scan
 
 - script: |
     ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "$(CORREO)" -q -f ~/.ssh/id_rsa
