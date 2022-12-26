@@ -24,5 +24,5 @@ variable "location" {
 }
 
 variable "kubernetes_version" {
-    default = "1.22.15"
+    default = "1.23.8"
 }
